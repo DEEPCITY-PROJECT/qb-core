@@ -39,6 +39,8 @@ function Locale:new(opts)
     }) or false
 
     self.warnOnMissing = type(opts.warnOnMissing) ~= 'boolean' and true or opts.warnOnMissing
+    
+    self.warnOnMissing = opts.warnOnMissing or true
 
     self.phrases = {}
     self:extend(opts.phrases or {})
@@ -104,9 +106,6 @@ function Locale:t(key, subs)
         if self.warnOnMissing then
             print(('^3Warning: Missing phrase for key: "%s"'):format(key))
         end
-        if self.fallback then
-            return self.fallback:t(key, subs)
-        end
         result = key
     end
 
@@ -114,6 +113,10 @@ function Locale:t(key, subs)
         result = translateKey(phrase, subs)
     end
 
+    if self.fallback then
+        return self.fallback:t(key, subs)
+    end
+    
     return result
 end
 

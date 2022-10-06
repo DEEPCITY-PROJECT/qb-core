@@ -14,9 +14,14 @@ QBConfig.Money.PayCheckSociety = false -- If true paycheck will come from the so
 QBConfig.Player = {}
 QBConfig.Player.HungerRate = 4.2 -- Rate at which hunger goes down.
 QBConfig.Player.ThirstRate = 3.8 -- Rate at which thirst goes down.
+QBConfig.Player.MaxWeight = 120000 -- Max weight a player can carry (currently 120kg, written in grams)
+QBConfig.Player.MaxInvSlots = 100 -- Max inventory slots for a player
 QBConfig.Player.Bloodtypes = {
     "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-",
 }
+
+
+
 
 QBConfig.Server = {} -- General server config
 QBConfig.Server.Closed = false -- Set server closed (no one can join except people with ace permission 'qbadmin.join')

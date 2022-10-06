@@ -86,27 +86,49 @@ RegisterNUICallback('getNotifyConfig', function(_, cb)
 end)
 
 function QBCore.Functions.Notify(text, texttype, length)
+    local avaliableTypes = {
+        "check",
+        "info",
+        "ann",
+        "msg",
+        "twt",
+        "call",
+        "venicebank",
+        "bill",
+        "lspd",
+        "save",
+        "ems",
+        "error",
+    }
+
+    local convert = {
+        ["primary"] = 'info',
+        ["success"] = 'check',
+        ["police"] = 'lspd',
+        ["ambulance"] = 'ems',
+    }
+
+    if convert[texttype] then
+        texttype = convert[texttype]
+    end
+    local found = false
+    for _,v in pairs(avaliableTypes) do
+        if texttype == v then
+            found = true
+        end
+    end
+    if not found then
+        texttype = 'info'
+    end
+
     if type(text) == "table" then
         local ttext = text.text or 'Placeholder'
         local caption = text.caption or 'Placeholder'
-        texttype = texttype or 'primary'
         length = length or 5000
-        SendNUIMessage({
-            action = 'notify',
-            type = texttype,
-            length = length,
-            text = ttext,
-            caption = caption
-        })
+        TriggerEvent('codem-notification',ttext,length,texttype)
     else
-        texttype = texttype or 'primary'
         length = length or 5000
-        SendNUIMessage({
-            action = 'notify',
-            type = texttype,
-            length = length,
-            text = text
-        })
+        TriggerEvent('codem-notification',text,length,texttype)
     end
 end
 
@@ -355,6 +377,20 @@ function QBCore.Functions.AttachProp(ped, model, boneId, x, y, z, xR, yR, zR, ve
     AttachEntityToEntity(prop, ped, bone, x, y, z, xR, yR, zR, 1, 1, 0, 1, not vertex and 2 or 0, 1)
     SetModelAsNoLongerNeeded(modelHash)
     return prop
+end
+
+function QBCore.Functions.SpawnLocalObject(model, coords, cb)
+    local model = (type(model) == 'number' and model or GetHashKey(model))
+
+    Citizen.CreateThread(function()
+        RequestModel(model)
+        local obj = CreateObject(model, coords.x, coords.y, coords.z, false, false, true)
+        SetModelAsNoLongerNeeded(model)
+
+        if cb then
+            cb(obj)
+        end
+    end)
 end
 
 -- Vehicle
@@ -992,3 +1028,13 @@ function QBCore.Functions.GetGroundZCoord(coords)
         return coords
     end
 end
+
+CreateThread(function()
+    RegisterFontFile('out') -- out is gfx file font  -- PatrickHand
+    
+    FontId = RegisterFontId('Balo')
+    
+    AddTextEntry('STRING', "<FONT FACE='Balo'>~a~</FONT>") -- tahoma is name font
+    AddTextEntry('CUSTOM_STRING', "<FONT FACE='Balo'>~a~</FONT>")
+    
+end)
